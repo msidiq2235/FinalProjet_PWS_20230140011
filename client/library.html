@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>My Library - ForgePlay</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-[#1b2838] text-white min-h-screen font-sans">
+
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[9999] flex flex-col gap-2"></div>
+
+    <nav class="bg-[#171a21] border-b border-gray-800 p-4 flex justify-between items-center sticky top-0 z-50">
+        <a href="index.html" class="font-black text-xl tracking-widest text-gray-400 hover:text-white">
+            <i class="fa-solid fa-arrow-left mr-2"></i> BACK TO STORE
+        </a>
+        <div class="flex items-center gap-4">
+            <span id="user-display" class="font-bold text-blue-400">User</span>
+            <button onclick="logout()" class="text-xs bg-red-900 text-red-300 px-3 py-1 rounded hover:bg-red-800">LOGOUT</button>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto p-8">
+        <h1 class="text-3xl font-light mb-8 border-b border-gray-700 pb-4">
+            MY COLLECTION <span class="text-sm text-gray-500 ml-2" id="game-count">(0 Games)</span>
+        </h1>
+
+        <div id="library-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="col-span-full text-center py-20 text-gray-500">
+                Loading library...
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        if(!localStorage.getItem('user_id')) window.location.href = 'login.html';
+        
+        document.getElementById('user-display').innerText = localStorage.getItem('username');
+        loadLibrary();
+    </script>
+</body>
+
+</html>

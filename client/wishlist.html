@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>My Wishlist - ForgePlay</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; background-color: #121212; color: white; }</style>
+</head>
+<body class="min-h-screen">
+
+    <nav class="bg-[#171a21] border-b border-gray-800 p-4 flex justify-between items-center sticky top-0 z-50">
+        <a href="index.html" class="font-bold text-gray-400 hover:text-white flex items-center gap-2">
+            <i class="fa-solid fa-arrow-left"></i> BACK TO STORE
+        </a>
+        <h1 class="text-xl font-black tracking-widest text-white">MY WISHLIST ❤️</h1>
+    </nav>
+
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[9999] flex flex-col gap-2"></div>
+
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <div id="wishlist-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="col-span-full text-center py-20 text-gray-500">
+                <i class="fa-solid fa-circle-notch fa-spin"></i> Loading wishlist...
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        async function loadMyWishlist() {
+            if(!userId) window.location.href = 'login.html';
+
+            const grid = document.getElementById('wishlist-grid');
+            const res = await fetch(`${API_URL}/wishlist/${userId}`);
+            const games = await res.json();
+
+            grid.innerHTML = '';
+
+            if(games.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-20 text-gray-500">
+                    <i class="fa-regular fa-heart text-4xl mb-4 opacity-30"></i><br>
+                    No games in wishlist yet.
+                </div>`;
+                return;
+            }
+
+            games.forEach(g => {
+                grid.innerHTML += `
+                    <div class="bg-[#1e232d] rounded-xl overflow-hidden border border-gray-700 flex flex-col relative">
+                        <button onclick="removeFromPage(${g.id}, this)" class="absolute top-2 right-2 bg-black/60 hover:bg-red-600 w-8 h-8 rounded-full text-white transition flex items-center justify-center z-10">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+
+                        <img src="${g.image_url}" class="w-full h-40 object-cover">
+                        <div class="p-4 flex flex-col flex-grow">
+                            <h4 class="font-bold text-white mb-1 truncate">${g.title}</h4>
+                            <div class="mt-auto pt-2 flex justify-between items-center">
+                                <span class="font-bold text-blue-400">Rp ${g.price.toLocaleString()}</span>
+                                <a href="index.html" class="text-xs bg-blue-600 hover:bg-blue-500 px-3 py-1.5 rounded text-white font-bold">VIEW</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Fungsi Hapus Khusus Halaman Ini (Langsung hilangin kotaknya)
+        async function removeFromPage(gId, btn) {
+            if(!confirm("Remove from wishlist?")) return;
+            
+            // Panggil API toggle (Logicnya sama, kalau ada -> dihapus)
+            await fetch(`${API_URL}/wishlist/toggle`, {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ user_id: userId, game_id: gId })
+            });
+
+            // Hapus elemen HTML visualnya
+            btn.closest('.bg-\\[\\#1e232d\\]').remove();
+            showToast("Removed from wishlist");
+        }
+
+        loadMyWishlist();
+    </script>
+</body>
+</html>

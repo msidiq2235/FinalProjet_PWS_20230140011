@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ForgePlay Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #121212; color: white; }
+        .hero-gradient { background: linear-gradient(0deg, #121212 0%, rgba(18,18,18,0.8) 50%, rgba(18,18,18,0) 100%); }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col overflow-x-hidden">
+
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[9999] flex flex-col gap-2"></div>
+
+    <div id="admin-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-sm">
+        <div class="bg-[#1b2838] p-8 rounded-xl border border-red-900 w-full max-w-lg shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-red-500"><i class="fa-solid fa-upload"></i> Publish New Game</h3>
+                <button onclick="toggleAdminModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            
+            <div class="space-y-4">
+                <input id="g-title" type="text" placeholder="Game Title" class="w-full bg-black p-3 rounded text-white border border-gray-700 focus:border-red-500 outline-none">
+                
+                <div class="flex gap-4">
+                    <input id="g-genre" type="text" placeholder="Genre (e.g. RPG)" class="w-1/3 bg-black p-3 rounded text-white border border-gray-700 outline-none focus:border-red-500">
+                    <input id="g-price" type="number" placeholder="Price (Rp)" class="w-1/3 bg-black p-3 rounded text-white border border-gray-700 outline-none focus:border-red-500">
+                    <input id="g-discount" type="number" placeholder="Disc %" class="w-1/3 bg-black p-3 rounded text-white border border-gray-700 outline-none focus:border-red-500">
+                </div>
+
+                <input id="g-url" type="text" placeholder="Download URL (Secret)" class="w-full bg-black p-3 rounded text-white border border-gray-700 focus:border-red-500 outline-none">
+                <input id="g-img" type="text" placeholder="Image URL (Landscape)" class="w-full bg-black p-3 rounded text-white border border-gray-700 focus:border-red-500 outline-none">
+                
+                <textarea id="g-desc" placeholder="Game Description (Short synopsis...)" class="w-full bg-black p-3 rounded text-white border border-gray-700 h-24 focus:border-red-500 outline-none"></textarea>
+            </div>
+            
+            <button onclick="adminUpload()" class="w-full mt-6 bg-red-600 hover:bg-red-700 text-white py-3 rounded font-bold transition shadow-lg shadow-red-900/50">PUBLISH NOW</button>
+        </div>
+    </div>
+
+    <nav class="bg-[#171a21] border-b border-gray-800 sticky top-0 z-50 backdrop-blur-md bg-opacity-90">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="#" onclick="window.scrollTo(0,0)" class="flex items-center gap-3 group">
+                <i class="fa-solid fa-gamepad text-3xl text-blue-500 group-hover:text-white transition"></i>
+                <span class="text-2xl font-black tracking-widest text-white">FORGEPLAY</span>
+            </a>
+            <div class="hidden md:flex space-x-8">
+            <a href="#store" id="nav-store" class="nav-link text-gray-400 hover:text-white py-2 transition font-medium border-b-2 border-transparent">STORE</a>
+            <a href="#about" id="nav-about" class="nav-link text-gray-400 hover:text-white py-2 transition font-medium border-b-2 border-transparent">ABOUT</a>
+            <a href="#faq" id="nav-faq" class="nav-link text-gray-400 hover:text-white py-2 transition font-medium border-b-2 border-transparent">FAQ</a>
+            </div>
+            <div id="nav-auth" class="flex items-center gap-4">
+                <a href="login.html" class="text-gray-300 hover:text-white font-semibold text-sm">Log In</a>
+                <a href="login.html" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded text-sm font-bold transition shadow-lg shadow-blue-900/50">SIGN UP</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-7xl mx-auto px-6 py-8 w-full">
+        <section id="store" class="mb-20 pt-20 -mt-20">
+
+        <div class="relative rounded-2xl overflow-hidden mb-16 group border border-gray-800 shadow-2xl">
+            <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1400" class="w-full h-[450px] object-cover transition duration-700 group-hover:scale-105">
+            <div class="absolute inset-0 hero-gradient flex flex-col justify-end p-10">
+                <h2 class="text-5xl font-black mb-2 drop-shadow-lg tracking-tight">FORGE YOUR LEGEND</h2>
+                <p class="text-gray-300 text-lg mb-6 max-w-2xl drop-shadow-md">
+                    Platform distribusi game premium dengan lisensi digital instan. Aman, Cepat, dan Terpercaya.
+                </p>
+                <div class="flex gap-4">
+                    <button onclick="scrollToCatalog()" class="bg-white text-black px-8 py-3 rounded font-bold hover:bg-gray-200 transition">
+                        BROWSE NOW
+                    </button>
+                    <button onclick="toggleWishlist(this)" class="bg-gray-800 bg-opacity-80 text-white px-8 py-3 rounded font-bold hover:bg-gray-700 transition backdrop-blur-sm border border-gray-600">
+                        ADD TO WISHLIST
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center justify-between mb-8">
+            <h3 class="text-2xl font-bold flex items-center gap-2 text-white">
+                <i class="fa-solid fa-fire text-orange-500"></i> Featured & Trending
+            </h3>
+            <div class="flex gap-2">
+                <button onclick="refreshCatalog()" class="bg-gray-800 px-3 py-1 rounded text-gray-400 hover:text-white hover:bg-gray-700 transition" title="Refresh List"><i class="fa-solid fa-rotate-right"></i></button>
+                <button onclick="refreshCatalog()" class="bg-gray-800 px-3 py-1 rounded text-gray-400 hover:text-white hover:bg-gray-700 transition"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <div id="store-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-24 min-h-[300px]">
+            <div class="col-span-full h-40 flex items-center justify-center text-gray-500">
+                <i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Loading Catalog...
+            </div>
+        </div>
+
+        </section>
+
+        <hr class="border-gray-800 mb-20">
+
+        <section id="about" class="mb-24 grid grid-cols-1 md:grid-cols-2 gap-12 items-center pt-24 -mt-24 min-h-[60vh]">
+            <div>
+                <h2 class="text-3xl font-bold mb-4 text-blue-500">About ForgePlay</h2>
+                <h3 class="text-xl font-semibold mb-4 text-white">The Future of Digital Distribution</h3>
+                <p class="text-gray-400 leading-relaxed mb-6">ForgePlay menghubungkan developer dengan gamer melalui sistem lisensi real-time yang aman.</p>
+                <button onclick="scrollToCatalog()" class="text-blue-400 hover:text-white font-bold underline">Start Exploring</button>
+            </div>
+            <div class="bg-[#1b2838] p-8 rounded-xl border border-gray-700 shadow-xl hover:border-blue-500 transition cursor-default">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-bold">1</div>
+                    <div><h4 class="font-bold">Register</h4><p class="text-xs text-gray-500">Create Identity</p></div>
+                </div>
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-bold">2</div>
+                    <div><h4 class="font-bold">Buy</h4><p class="text-xs text-gray-500">Get License</p></div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-bold">3</div>
+                    <div><h4 class="font-bold">Play</h4><p class="text-xs text-gray-500">Anytime, Anywhere</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq" class="mb-20 max-w-4xl mx-auto pt-24 -mt-24 min-h-[60vh]">
+            <h2 class="text-3xl font-bold mb-10 text-center">FAQ</h2>
+            <div class="space-y-4">
+                <div class="bg-[#1b2838] p-6 rounded-lg border border-gray-700 cursor-pointer hover:bg-[#212e3d] transition" onclick="showToast('Redirecting to Help Center...', 'success')">
+                    <h4 class="font-bold text-white mb-2"><i class="fa-solid fa-circle-question text-blue-500 mr-2"></i> How to buy games?</h4>
+                    <p class="text-gray-400 text-sm">Login -> Select Game -> Click Buy Now. License is instant.</p>
+                </div>
+                <div class="bg-[#1b2838] p-6 rounded-lg border border-gray-700 cursor-pointer hover:bg-[#212e3d] transition" onclick="showToast('License Key info copied!', 'success')">
+                    <h4 class="font-bold text-white mb-2"><i class="fa-solid fa-key text-blue-500 mr-2"></i> What is License Key?</h4>
+                    <p class="text-gray-400 text-sm">A unique proof of ownership generated by our backend system.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-[#171a21] border-t border-gray-800 py-10">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="text-gray-500 text-sm mb-4">&copy; 2026 ForgePlay Corp.</p>
+            <div class="flex justify-center gap-6 text-gray-400 text-sm cursor-pointer">
+                <span onclick="showToast('Opening Privacy Policy...')" class="hover:text-white">Privacy</span>
+                <span onclick="showToast('Opening Terms...')" class="hover:text-white">Terms</span>
+                <span onclick="window.scrollTo(0, document.body.scrollHeight)" class="hover:text-white">Support</span>
+            </div>
+        </div>
+    </footer>
+
+    <div id="user-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-sm">
+        <div class="bg-[#1b2838] p-8 rounded-xl border border-purple-500 w-full max-w-4xl shadow-2xl h-[80vh] flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-purple-400"><i class="fa-solid fa-users"></i> Registered Users</h3>
+                <button onclick="toggleUserModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            
+            <div class="overflow-y-auto flex-grow border border-gray-700 rounded-lg">
+                <table class="w-full text-left text-sm text-gray-400">
+                    <thead class="bg-[#2a475e] text-white uppercase sticky top-0">
+                        <tr>
+                            <th class="px-6 py-3">ID</th>
+                            <th class="px-6 py-3">Username</th>
+                            <th class="px-6 py-3">Role</th>
+                            <th class="px-6 py-3">Joined Date</th>
+                            <th class="px-6 py-3">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table-body" class="divide-y divide-gray-700 bg-[#171a21]">
+                        </tbody>
+                </table>
+            </div>
+            <div class="mt-4 text-xs text-gray-500 text-right">
+                *Only Admin can see this data.
+            </div>
+        </div>
+    </div>
+
+    <div id="edit-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-sm">
+        <div class="bg-[#1b2838] p-8 rounded-xl border border-yellow-600 w-full max-w-lg shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-yellow-500"><i class="fa-solid fa-pen-to-square"></i> Edit Game</h3>
+                <button onclick="toggleEditModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            
+            <input type="hidden" id="edit-id"> <div class="space-y-4">
+                <input id="edit-title" type="text" placeholder="Game Title" class="w-full bg-black p-3 rounded text-white border border-gray-700 focus:border-yellow-500 outline-none">
+                <div class="flex gap-4">
+                    <input id="edit-genre" type="text" placeholder="Genre" class="w-1/3 bg-black p-3 rounded text-white border border-gray-700 outline-none focus:border-yellow-500">
+                    <input id="edit-price" type="number" placeholder="Price" class="w-1/3 bg-black p-3 rounded text-white border border-gray-700 outline-none focus:border-yellow-500">
+                    <input id="edit-discount" type="number" placeholder="Disc %" class="w-1/3 bg-black p-3 rounded text-white border border-gray-700 outline-none focus:border-yellow-500">
+                </div>
+                <input id="edit-url" type="text" placeholder="Download URL" class="w-full bg-black p-3 rounded text-white border border-gray-700 focus:border-yellow-500 outline-none">
+                <input id="edit-img" type="text" placeholder="Image URL" class="w-full bg-black p-3 rounded text-white border border-gray-700 focus:border-yellow-500 outline-none">
+                <textarea id="edit-desc" placeholder="Description" class="w-full bg-black p-3 rounded text-white border border-gray-700 h-24 focus:border-yellow-500 outline-none"></textarea>
+            </div>
+            
+            <button onclick="saveEditGame()" class="w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white py-3 rounded font-bold transition shadow-lg">SAVE CHANGES</button>
+        </div>
+    </div>
+
+    <div id="payment-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center bg-black bg-opacity-90 backdrop-blur-sm transition-opacity">
+        <div class="bg-[#1b2838] rounded-2xl shadow-2xl border border-gray-700 w-full max-w-2xl overflow-hidden transform scale-100 transition-transform">
+            
+            <div class="bg-[#171a21] px-8 py-4 border-b border-gray-700 flex justify-between items-center">
+                <h3 class="text-white font-bold text-lg"><i class="fa-solid fa-cart-shopping mr-2 text-blue-500"></i> Checkout</h3>
+                <button onclick="closePaymentModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+
+            <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <div class="space-y-4">
+                    <img id="pay-img" src="" class="w-full h-32 object-cover rounded-lg border border-gray-600 shadow-md">
+                    <div>
+                        <h4 id="pay-title" class="text-xl font-bold text-white leading-tight">Cyberpunk 2077</h4>
+                        <p class="text-xs text-gray-400 mt-1">Digital License Key</p>
+                    </div>
+                    <div class="border-t border-gray-700 pt-4 flex justify-between items-center">
+                        <span class="text-gray-400">Total:</span>
+                        <span id="pay-price" class="text-2xl font-bold text-blue-400">Rp 500.000</span>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-bold text-gray-300 uppercase mb-3">Select Payment Method</h4>
+                    <div class="space-y-3">
+                        <label class="flex items-center justify-between bg-[#2a3f5a] p-3 rounded border border-blue-500 cursor-pointer hover:bg-[#314a6e] transition">
+                            <div class="flex items-center gap-3">
+                                <input type="radio" name="payment" checked class="accent-blue-500">
+                                <span class="text-sm font-bold text-white"><i class="fa-brands fa-cc-visa text-xl mr-1"></i> Credit Card</span>
+                            </div>
+                        </label>
+                        <label class="flex items-center justify-between bg-[#232d3d] p-3 rounded border border-gray-600 cursor-pointer hover:bg-[#2a3f5a] transition">
+                            <div class="flex items-center gap-3">
+                                <input type="radio" name="payment" class="accent-blue-500">
+                                <span class="text-sm font-bold text-gray-300"><i class="fa-solid fa-wallet text-xl mr-1"></i> E-Wallet (GoPay/OVO)</span>
+                            </div>
+                        </label>
+                        <label class="flex items-center justify-between bg-[#232d3d] p-3 rounded border border-gray-600 cursor-pointer hover:bg-[#2a3f5a] transition">
+                            <div class="flex items-center gap-3">
+                                <input type="radio" name="payment" class="accent-blue-500">
+                                <span class="text-sm font-bold text-gray-300"><i class="fa-solid fa-building-columns text-xl mr-1"></i> Bank Transfer</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="mt-8">
+                        <p class="text-[10px] text-gray-500 mb-2 text-center">By clicking Pay Now, you agree to the Terms of Service.</p>
+                        <button id="btn-confirm-pay" onclick="processPayment()" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded shadow-lg transition transform hover:-translate-y-1 flex justify-center items-center gap-2">
+                            PAY NOW
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        loadStore();
+        checkLoginState();
+    </script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Access - ForgePlay</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: #0f0f12; color: white; font-family: sans-serif; }
+        .glass { background: rgba(23, 26, 33, 0.95); backdrop-filter: blur(10px); border: 1px solid #333; }
+    </style>
+</head>
+<body class="h-screen flex items-center justify-center bg-[url('https://images.unsplash.com/photo-1614728263952-84ea256f9679?w=1920')] bg-cover bg-center">
+    
+    <div class="glass p-8 rounded-xl shadow-2xl w-full max-w-sm relative overflow-hidden">
+        
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-black text-blue-500 tracking-widest mb-2">FORGEPLAY</h2>
+            <div class="flex justify-center gap-4 text-sm font-bold border-b border-gray-700 pb-2">
+                <button onclick="switchMode('login')" id="tab-login" class="text-white border-b-2 border-blue-500 pb-2 transition">SIGN IN</button>
+                <button onclick="switchMode('register')" id="tab-register" class="text-gray-500 hover:text-gray-300 pb-2 transition">CREATE ACCOUNT</button>
+            </div>
+        </div>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="block text-gray-400 text-xs font-bold uppercase mb-1">Username</label>
+                <input type="text" id="u" class="w-full bg-[#32353c] border border-black rounded p-3 text-white focus:outline-none focus:border-blue-500 transition placeholder-gray-600" placeholder="Enter username">
+            </div>
+            <div>
+                <label class="block text-gray-400 text-xs font-bold uppercase mb-1">Password</label>
+                <input type="password" id="p" class="w-full bg-[#32353c] border border-black rounded p-3 text-white focus:outline-none focus:border-blue-500 transition placeholder-gray-600" placeholder="••••••••">
+            </div>
+            
+            <button id="btn-action" onclick="handleAuth()" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold py-3 rounded shadow-lg transition transform hover:-translate-y-1 mt-4">
+                SIGN IN
+            </button>
+        </div>
+
+        <div class="mt-6 text-center">
+            <a href="index.html" class="text-xs text-gray-500 hover:text-white"><i class="fa-solid fa-arrow-left"></i> Back to Store</a>
+        </div>
+    </div>
+
+    <script>
+        let isRegister = false;
+        const API_URL = 'http://localhost:3000/api';
+
+        function switchMode(mode) {
+            const btn = document.getElementById('btn-action');
+            const tabLogin = document.getElementById('tab-login');
+            const tabReg = document.getElementById('tab-register');
+
+            if(mode === 'register') {
+                isRegister = true;
+                btn.innerText = "CREATE ACCOUNT";
+                btn.className = "w-full bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 text-white font-bold py-3 rounded shadow-lg transition transform hover:-translate-y-1 mt-4";
+                
+                tabReg.className = "text-white border-b-2 border-purple-500 pb-2 transition";
+                tabLogin.className = "text-gray-500 hover:text-gray-300 pb-2 transition";
+            } else {
+                isRegister = false;
+                btn.innerText = "SIGN IN";
+                btn.className = "w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold py-3 rounded shadow-lg transition transform hover:-translate-y-1 mt-4";
+
+                tabLogin.className = "text-white border-b-2 border-blue-500 pb-2 transition";
+                tabReg.className = "text-gray-500 hover:text-gray-300 pb-2 transition";
+            }
+        }
+
+        async function handleAuth() {
+            const u = document.getElementById('u').value;
+            const p = document.getElementById('p').value;
+
+            if(!u || !p) return alert("Please fill all fields");
+
+            const endpoint = isRegister ? '/auth/register' : '/auth/login';
+
+            try {
+                const res = await fetch(API_URL + endpoint, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username: u, password: p})
+                });
+
+                const data = await res.json();
+
+                if(res.ok) {
+                    if(isRegister) {
+                        alert("Account Created! Please Sign In.");
+                        switchMode('login');
+                    } else {
+                        // Login Success
+                        localStorage.setItem('user_id', data.user.id);
+                        localStorage.setItem('username', data.user.username);
+                        localStorage.setItem('role', data.user.role);
+                        window.location.href = 'index.html';
+                    }
+                } else {
+                    alert("Error: " + data.message);
+                }
+            } catch(e) {
+                alert("Server Error");
+            }
+        }
+    </script>
+</body>
+</html>
